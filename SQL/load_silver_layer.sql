@@ -1,0 +1,127 @@
+CREATE OR ALTER PROCEDURE silver.load_silver AS
+BEGIN
+	TRUNCATE TABLE silver.application_train
+	INSERT INTO silver.application_train(
+			SK_ID_CURR ,
+			TARGET ,
+			NAME_CONTRACT_TYPE,
+			CODE_GENDER,
+			FLAG_OWN_CAR,
+			FLAG_OWN_REALTY, 
+			AMT_INCOME_TOTAL,
+			AMT_CREDIT,
+			AMT_ANNUITY,
+			AMT_GOODS_PRICE,
+			NAME_INCOME_TYPE ,
+			NAME_EDUCATION_TYPE,
+			NAME_FAMILY_STATUS,
+			NAME_HOUSING_TYPE,
+			REGION_POPULATION_RELATIVE,	
+			AGE,
+			YEARS_EMPLOYED,
+			YEARS_REGISTERED,
+			OCCUPATION_TYPE,
+			REGION_RATING_CLIENT,
+			REGION_RATING_CLIENT_W_CITY,
+			WEEKDAY_APPR_PROCESS_START,
+			ORGANIZATION_TYPE,
+			EXT_SOURCE,
+			DEF_60_SOCIAL_CIRCLE_PCT,
+			AMT_REQ_CREDIT_BUREAU_YEAR 
+			)
+			SELECT * 
+			FROM bronze.application_train
+
+	TRUNCATE TABLE silver.previous_application
+	INSERT INTO silver.previous_application(
+			SK_ID_PREV,
+			SK_ID_CURR,
+			AMT_APPLICATION,
+			AMT_CREDIT,
+			CODE_REJECT_REASON 
+	)
+			SELECT
+			SK_ID_PREV,
+			SK_ID_CURR,
+			AMT_APPLICATION,
+			AMT_CREDIT,
+			CODE_REJECT_REASON 
+			FROM bronze.previous_application
+
+	TRUNCATE TABLE silver.bureau
+	INSERT INTO silver.bureau(
+			SK_ID_CURR,
+			SK_ID_BUREAU,
+			CREDIT_ACTIVE,
+			CREDIT_CURRENCY,
+			AMT_CREDIT_SUM_OVERDUE,
+			CREDIT_TYPE 
+		)
+		    SELECT 
+			SK_ID_CURR,
+			SK_ID_BUREAU,
+			CREDIT_ACTIVE,
+			CREDIT_CURRENCY,
+			AMT_CREDIT_SUM_OVERDUE,
+			CREDIT_TYPE
+			FROM bronze.bureau
+
+	TRUNCATE TABLE silver.credit_card_balance
+	INSERT INTO silver.credit_card_balance(
+			SK_ID_PREV,
+			SK_ID_CURR,
+			MONTHS_BALANCE,
+			AMT_BALANCE,
+			AMT_CREDIT_LIMIT_ACTUAL,
+			AMT_PAYMENT_TOTAL_CURRENT,
+			CNT_DRAWINGS_ATM_CURRENT 
+	)
+
+			SELECT
+			SK_ID_PREV,
+			SK_ID_CURR,
+			MONTHS_BALANCE,
+			AMT_BALANCE,
+			AMT_CREDIT_LIMIT_ACTUAL,
+			AMT_PAYMENT_TOTAL_CURRENT,
+			CNT_DRAWINGS_ATM_CURRENT 
+			FROM bronze.credit_card_balance
+
+	TRUNCATE TABLE silver.installments_payments
+	INSERT INTO silver.installments_payments(
+			SK_ID_PREV,
+			SK_ID_CURR,
+			DAYS_INSTALMENT,
+			DAYS_ENTRY_PAYMENT 
+	)
+			SELECT 
+			SK_ID_PREV,
+			SK_ID_CURR,
+			DAYS_INSTALMENT,
+			DAYS_ENTRY_PAYMENT 
+			FROM bronze.installments_payments
+
+	TRUNCATE TABLE silver.POS_CASH_balance
+	INSERT INTO silver.POS_CASH_balance(
+			SK_ID_PREV,
+			SK_ID_CURR,
+			CNT_INSTALMENT_FUTURE,
+			SK_DPD_DEF
+	)
+			SELECT
+			SK_ID_PREV,
+			SK_ID_CURR,
+			CNT_INSTALMENT_FUTURE,
+			SK_DPD_DEF
+			FROM bronze.POS_CASH_balance
+
+	TRUNCATE TABLE silver.bureau_balance
+	INSERT INTO silver.bureau_balance(
+		SK_ID_BUREAU,
+		MONTHS_BALANCE,
+		STATUS 
+	)
+			SELECT * 
+			FROM bronze.bureau_balance
+END
+
